@@ -6,13 +6,16 @@ import morgan from 'morgan';
 import status from 'http-status';
 import { rateLimit } from 'express-rate-limit';
 import config from "./app/config";
+import router from "./app/routes";
+import globalErrorHandler from "./app/middlewares/globalErrorhandler";
+import notFound from "./app/middlewares/notFound";
 
 
 const app: Application = express();
 
 // CORS configuration
 const corsOptions = {
-  origin: config.cors_origin ,
+  origin: config.cors_origin,
   credentials: config.cors_credentials,
 };
 
@@ -67,6 +70,10 @@ const coreMiddlewares = [
 app.use(coreMiddlewares);
 
 
+// Routes
+app.use("/api/v1", router);
+
+
 // Base route
 app.get(['/', '/api/v1', '/health'], (req, res) => {
   res.status(status.OK).json({
@@ -85,7 +92,11 @@ app.get(['/', '/api/v1', '/health'], (req, res) => {
 });
 
 
+//Global middleware
+app.use(globalErrorHandler);
 
+//Not Found
+app.use(notFound);
 
 
 export default app;
