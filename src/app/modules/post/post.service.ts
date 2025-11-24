@@ -14,9 +14,9 @@ const createPostIntoDB = async (userId: Types.ObjectId, payload: Partial<IPost>)
 };
 
 const getAllPostsFromDB = async (userId?: Types.ObjectId) => {
-  
+
     const query: any = userId
-        ? { $or: [{ userId }, { visibility: 'public' }] }
+        ? { $or: [{ userId, visibility: 'private' }, { visibility: 'public' }] }
         : { visibility: 'public' };
 
     const posts = await PostModel.find(query)
@@ -154,7 +154,7 @@ const toggleCommentLike = async (postId: string, commentId: string, userId: Type
     const likeIndex = comment.likes.findIndex((like: any) => like.userId.toString() === userId.toString());
 
     if (likeIndex > -1) {
-        
+
         comment.likes.splice(likeIndex, 1);
     } else {
         comment.likes.push({ userId });
